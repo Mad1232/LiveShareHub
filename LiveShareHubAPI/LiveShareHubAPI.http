@@ -1,0 +1,6 @@
+@LiveShareHubAPI_HostAddress = http://localhost:5098
+
+GET {{LiveShareHubAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

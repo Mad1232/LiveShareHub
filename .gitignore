@@ -1,0 +1,24 @@
+# LiveShareHub/.gitignore
+
+# General
+.DS_Store
+*.swp
+
+# .NET build artifacts
+**/[Bb]in/
+**/[Oo]bj/
+
+# User-specific files
+**/[Uu]ser.props
+**/[Uu]ser.settings
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE specific files
+.vs/
+.vscode/
+
+# Rider specific
+*.idea/
