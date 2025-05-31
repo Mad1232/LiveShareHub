@@ -1,0 +1,17 @@
+To QUIT = contrl + C
+
+Previous Error: What Went Wrong?
+The build was previously hanging because you had multiple suspended (zsh: suspended) dotnet processes from pressing Ctrl+Z repeatedly.
+These processes held onto resources and blocked new builds from running correctly.
+Killing all those processes reset your terminal and allowed the build to proceed normally.
+Best Practices to Avoid This in the Future
+If a command is taking too long, use Ctrl+C to cancel it, not Ctrl+Z (which only suspends it).
+If you ever see zsh: suspended again, check for stuck processes with ps aux | grep dotnet and kill them as you did.
+Use dotnet clean between failed builds to clear intermediate files.
+
+To Run: 
+dotnet clean
+dotnet build
+dotnet run
+GO TO => http://localhost:5098/swagger/index.html
+Test it over there, by feeding inputs
