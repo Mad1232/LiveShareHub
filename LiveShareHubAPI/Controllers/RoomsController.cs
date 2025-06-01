@@ -12,8 +12,8 @@ namespace LiveShareHubApi.Controllers{
         private readonly OracleDbService oracleDb; //OrcaleDB running via Docker
 
         // Constructor
-        public RoomsController() {
-            oracleDb = new OracleDbService(); 
+        public RoomsController(OracleDbService db) {
+            oracleDb = db; 
          }
 
         // GET api/room/{id}
@@ -60,7 +60,7 @@ namespace LiveShareHubApi.Controllers{
                 return BadRequest("A file with the same storedFileName already exists.");
 
             oracleDb.AddFileToRoom(id, file);
-            
+
             return Ok();
         }
     }

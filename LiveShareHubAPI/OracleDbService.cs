@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using Oracle.ManagedDataAccess.Client;  // Oracle DB driver
 using LiveShareHubAPI.Models;           // For Room and SharedFile models
+using Microsoft.Extensions.Configuration;
 
 public class OracleDbService
 {
     private readonly string connectionString;
 
     // Constructor sets connection string to your Oracle XE instance
-    public OracleDbService()
+    public OracleDbService(IConfiguration configuration)
     {
-        connectionString = "User Id=system;Password=MySecurePassword123;Data Source=localhost:1521/XEPDB1;";
+        connectionString = configuration.GetConnectionString("OracleDb");
     }
 
     // Get all files associated with a given room ID from DB
