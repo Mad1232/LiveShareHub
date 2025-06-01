@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using LiveShareHubAPI.Models; //Added these to use Room.cs and SharedFile.cs
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace LiveShareHubApi.Controllers{
     [ApiController]
@@ -48,20 +50,62 @@ namespace LiveShareHubApi.Controllers{
         }
 
         // POST api/room/{id}/files
-        [HttpPost("{id}/files")]
-        public ActionResult uploadFile(string id, [FromBody] SharedFile file) // add (upload) a file to the room with the specified roomID
+        [HttpPost("{id}/upload")]
+        public async Task<IActionResult> uploadFile(string id, IFormFile file) // add (upload) a file to the room with the specified roomID
         {
             var room = oracleDb.GetRoomById(id);
             if(room == null){
-                return NotFound();
+                return NotFound("Room not found!");
+            }
+            if(file == null || file.Length == 0){
+                return BadRequest("No file uploaded!");
             }
 
-            if (oracleDb.FileExistsInRoom(id, file.storedFileName))
+            //Generate a unique name for the file
+            var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+
+            //Check if directory exists
+            if(!Directory.Exists(uploadFolder)){
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+
+            var filePath = Path.Combine(uploadFolder, uniqueFileName); //store the file in UploadedFiles folder
+
+            //Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {await file.CopyToAsync(stream);}
+
+            //Save Metadata to DB
+            var sharedFile = new SharedFile{
+                roomId = id,
+                originalFileName = file.FileName,
+                storedFileName = uniqueFileName,
+                uploadedAt = DateTime.Now
+            };
+
+            if (oracleDb.FileExistsInRoom(id, sharedFile.storedFileName))
                 return BadRequest("A file with the same storedFileName already exists.");
 
-            oracleDb.AddFileToRoom(id, file);
+            oracleDb.AddFileToRoom(id, sharedFile);
 
-            return Ok();
+            return Ok(sharedFile);
+        }
+
+        //GET api/room/{roomId}/files/{fileName}
+        [HttpGet("{roomId}/files/{fileName}")]
+        public IActionResult DownloadFile(string roomId, string fileName){
+            var uploadedFolder = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+            var filePath = Path.Combine(uploadedFolder , fileName);
+
+            if(!System.IO.File.Exists(filePath)){
+                return NotFound("File not found!");
+            }
+
+            var contentType = "application/octet-stream";  //convert any file type into binary
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, contentType, fileName);
         }
     }
 
