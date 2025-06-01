@@ -1,15 +1,23 @@
 import { Component } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
+  constructor(private router: Router) {}
+
   createRoom(): void {
     console.log('Create Room button clicked!');
-    // Add your logic for creating a room here (e.g., navigate to a new route, call an API, etc.)
+    this.router.navigate(['/room']).then(success => {
+      console.log('Navigation to /room succeeded:', success);
+    }).catch(error => {
+      console.error('Navigation to /room failed:', error);
+    });
+    
   }
 }
