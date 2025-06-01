@@ -1,5 +1,5 @@
 .navbar {
-  background-color: #fff;
+  background-color: #fbf4b5;
   display: flex;
   gap: 1rem;
   padding: 1rem 2rem;
@@ -35,4 +35,29 @@
 .room-content {
   padding: 2rem;
   color: white;
+}
+
+.editor-container-wrapper {
+  padding-top: 70px; /* To offset navbar */
+  height: 100vh;
+  width: 100vw; /* Take entire viewport width */
+  box-sizing: border-box;
+  display: flex;
+}
+
+/* This div is the parent to the CodeMirror editor */
+#cmHost {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+}
+
+/* Ensure CodeMirror fills its container */
+:host ::ng-deep .cm-editor {
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
 }
