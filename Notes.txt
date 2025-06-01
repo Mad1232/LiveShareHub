@@ -15,3 +15,15 @@ dotnet build
 dotnet run
 GO TO => http://localhost:5098/swagger/index.html
 Test it over there, by feeding inputs
+
+DOCKER:
+Go to temrminal: docker start oracle-xe and then try dotnet run (make sure docker is running and starts oracle-xe before loading backend project)
+Oracle DB Check SQL:
+docker exec -it oracle-xe bash
+sqlplus system/MySecurePassword123@localhost:1521/XEPDB1
+SELECT * FROM rooms; // Your SQL Query
+exit // from SQL
+exit // from bash
+
+
+
