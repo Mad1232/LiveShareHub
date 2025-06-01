@@ -9,29 +9,32 @@ namespace LiveShareHubApi.Controllers{
     [Route("api/room")] 
     public class RoomsController : ControllerBase // inheriting API features from ControllerBase
     {
-        private static readonly Dictionary<string, Room> virtual_rooms = new Dictionary<string, Room>(); // hash table to store roomID -> Room
+        private readonly OracleDbService oracleDb; //OrcaleDB running via Docker
 
         // Constructor
-        public RoomsController() { }
+        public RoomsController() {
+            oracleDb = new OracleDbService(); 
+         }
 
         // GET api/room/{id}
         [HttpGet("{id}")]
-        public ActionResult<Room> getRoom(string id) // return Room object based on the provided id
+        public ActionResult<Room> getRoom(string id)
         {
-            if (!virtual_rooms.ContainsKey(id))
+            var room = oracleDb.GetRoomById(id);
+            if (room == null)
                 return NotFound();
 
-            return Ok(virtual_rooms[id]);
+            return Ok(room);
         }
 
         // GET api/room/{id}/files
         [HttpGet("{id}/files")]
         public ActionResult<List<SharedFile>> getFiles(string id) // return list of SharedFiles for the given roomID
         {
-            if (!virtual_rooms.ContainsKey(id))
+            var files = oracleDb.GetFilesByRoomId(id);
+            if (files == null || files.Count == 0)
                 return NotFound();
-
-            return Ok(virtual_rooms[id].Files);
+            return Ok(files);
         }
 
         // POST api/room
@@ -39,7 +42,7 @@ namespace LiveShareHubApi.Controllers{
         public ActionResult<Room> createRoom() // create a new Room with a unique ID
         {
             var newRoom = new Room(Guid.NewGuid().ToString()); // Guid.NewGuid() creates a unique room ID
-            virtual_rooms[newRoom.roomID] = newRoom;
+            oracleDb.CreateRoom(newRoom);
 
             return CreatedAtAction(nameof(getRoom), new { id = newRoom.roomID }, newRoom); // return 201 with location header
         }
@@ -48,21 +51,17 @@ namespace LiveShareHubApi.Controllers{
         [HttpPost("{id}/files")]
         public ActionResult uploadFile(string id, [FromBody] SharedFile file) // add (upload) a file to the room with the specified roomID
         {
-            if (!virtual_rooms.ContainsKey(id))
+            var room = oracleDb.GetRoomById(id);
+            if(room == null){
                 return NotFound();
-
-            var room = virtual_rooms[id];
-
-            // check if a file with the same storedFileName already exists in this room
-            if (room.Files.Any(f => f.storedFileName == file.storedFileName))
-            {
-                return BadRequest("A file with the same storedFileName already exists.");
             }
 
-            // add the file to the room
-            room.Files.Add(file);
+            if (oracleDb.FileExistsInRoom(id, file.storedFileName))
+                return BadRequest("A file with the same storedFileName already exists.");
 
-            return Ok(); // return 200 OK
+            oracleDb.AddFileToRoom(id, file);
+            
+            return Ok();
         }
     }
 
