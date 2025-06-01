@@ -1,20 +1,21 @@
-<nav class="navbar navbar-expand-lg bg-white">
+<nav class="navbar navbar-expand-lg bg-white fixed-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Room: <span id="roomId">{{ roomId }}</span></a>
-    <div class="collapse navbar-collapse">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#roomNavbarContent" aria-controls="roomNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="roomNavbarContent">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="#" (click)="exitRoom()">Exit Room</a>
+          <a class="nav-link" href="#" (click)="viewFiles()">View Files</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#" (click)="uploadFile()">Upload File</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" (click)="viewFiles()">View Files</a>
+          <a class="nav-link text-danger" href="#" (click)="exitRoom()">End Session</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
-
-<div #editorRef id="editor" style="height: calc(100vh - 56px);"></div>
