@@ -22,3 +22,8 @@
 
 # Rider specific
 *.idea/
+
+# Hide sensitive config
+appsettings.json
+
+Notes.txt
