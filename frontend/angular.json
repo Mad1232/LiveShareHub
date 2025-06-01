@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "live-share-hub-frontend": {
+    "frontend": {  
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -25,7 +25,11 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css", 
               "src/styles.css"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           },
           "configurations": {
@@ -56,10 +60,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "live-share-hub-frontend:build:production"
+              "buildTarget": "frontend:build:production" 
             },
             "development": {
-              "buildTarget": "live-share-hub-frontend:build:development"
+              "buildTarget": "frontend:build:development" 
             }
           },
           "defaultConfiguration": "development"
@@ -84,6 +88,9 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
+            ],
+            "scripts": [ 
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           }
         }

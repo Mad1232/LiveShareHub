@@ -1,0 +1,42 @@
+
+.header1 {
+  text-align: center;
+  background-color: rgb(201, 226, 236);
+  padding: 30px;
+  border-radius: 15px; /* Softer, rounded corners for dynamic look */
+  max-width: 600px; /* Fixed width for container */
+  width: 100%; /* Responsive width */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover transition */
+}
+
+.header1:hover {
+  background-color: #d3dbff; /* Vibrant teal on hover */
+  transform: scale(1.05); /* Slight scale-up for dynamic effect */
+}
+
+h1 {
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  color: white; /* White text for contrast */
+  margin: 0; /* Remove default margin */
+}
+
+.createRoom {
+  background-color: #dc3545; /* Bootstrap's danger red for the box */
+  color: white; /* White text for contrast */
+  padding: 20px;
+  border-radius: 25px; /* Pill-shaped button */
+  display: flex; /* Flexbox to center text */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  max-width: 220px; /* Fixed width for the box */
+  margin: 20px auto; /* Center the box horizontally and add vertical spacing */
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase; /* Match the uppercase text */
+}
+
+mark {
+  font-weight: bold;
+}
