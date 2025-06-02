@@ -1,5 +1,17 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS policy to allow Angular frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -14,7 +26,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable CORS BEFORE authorization
+app.UseCors("AllowAngularApp");
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
