@@ -4,6 +4,6 @@ import { RoomComponent } from './room/room.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'room', component: RoomComponent },
+  { path: 'room/:id', component: RoomComponent },
   { path: '**', redirectTo: '' }
 ];

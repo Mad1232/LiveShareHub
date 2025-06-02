@@ -9,6 +9,7 @@ import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
 import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-room',
@@ -24,11 +25,15 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
 
 
   @ViewChild('cmHost') cmHost!: ElementRef<HTMLDivElement>; // For the editor's host div
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>; // for fileInput
   private editorView!: EditorView;                         // To hold the CodeMirror instance
   currentCode: string = `// Welcome to Room:!\n// Start coding with CodeMirror 6!\n\nfunction greet() {\n  console.log("Hello, world!");\n}`;
 
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
+    const roomId = this.route.snapshot.paramMap.get('id');
+    console.log('Room ID from URL:', roomId);
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -97,12 +102,35 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
 
   exitRoom(): void {
     console.log('Exit Room clicked!');
-    this.router.navigate(['/']);
+    this.router.navigate(['/']); //navigate back to homepage
   }
 
   uploadFile(): void {
     console.log('Upload File clicked!');
+    this.fileInput.nativeElement.click(); 
     // Future: Implement file upload logic
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0 || !this.roomId) return;
+
+    const selectedFile = target.files[0];
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    const uploadUrl = `http://localhost:5000/api/room/${this.roomId}/upload`;
+
+    this.http.post(uploadUrl, formData).subscribe({
+      next: (response) => {
+        console.log("Upload successful", response);
+        alert("File uploaded successfully!");
+      },
+      error: (error) => {
+        console.error("Upload failed", error);
+        alert("Failed to upload file.");
+      }
+    });
   }
 
   viewFiles(): void {
