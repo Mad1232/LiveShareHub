@@ -17,15 +17,17 @@ pipeline {
             }
         }
 
-        stage('Build Backend (.NET)') {
-            steps {
-                dir('backend') {
-                    sh 'dotnet clean'
-                    sh 'dotnet restore'
-                    sh 'dotnet build'
-                }
+    stage('Build Backend (.NET)') {
+        steps {
+            dir('backend') {
+                sh 'dotnet nuget list source'
+                sh 'curl -I https://api.nuget.org/v3/index.json'
+                sh 'dotnet clean'
+                sh 'dotnet restore'
+                sh 'dotnet build'
             }
         }
+    }
 
         stage('Build Frontend (Angular)') {
             steps {
