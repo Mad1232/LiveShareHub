@@ -2,7 +2,6 @@ pipeline {
     agent {
         dockerfile {
             filename 'Dockerfile.jenkins-agent'
-            label 'docker-agent'
         }
     }
 
