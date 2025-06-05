@@ -21,6 +21,7 @@ pipeline {
             steps {
                 dir('backend') {
                     sh 'dotnet clean'
+                    sh 'dotnet restore'
                     sh 'dotnet build'
                 }
             }
