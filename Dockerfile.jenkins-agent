@@ -2,9 +2,9 @@ FROM jenkins/inbound-agent:latest-jdk11
 
 USER root
 
-# Install Docker CLI
+# Install Docker CLI, sudo, wget, and curl
 RUN apt-get update && \
-    apt-get install -y docker.io sudo && \
+    apt-get install -y docker.io sudo wget curl && \
     usermod -aG docker jenkins
 
 # Install .NET SDK
