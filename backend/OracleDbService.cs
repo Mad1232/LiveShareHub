@@ -41,6 +41,44 @@ public class OracleDbService
         return files;
     }
 
+    // Get all Rooms
+    public List<Room> getAllRooms()
+    {
+        var rooms = new List<Room>();
+
+        using var conn = new OracleConnection(connectionString);
+        conn.Open();
+
+        using var cmd = new OracleCommand("SELECT room_id, created_at FROM rooms", conn);
+        using var reader = cmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            rooms.Add(new Room(reader.GetString(0))  // room_id
+            {
+                createdAt = reader.GetDateTime(1)
+            });
+        }
+
+        return rooms;
+    }
+
+    // Delete Room by ID
+    public void DeleteRoomByID(string roomId){
+        using var conn = new OracleConnection(connectionString);
+        conn.Open();
+
+        // First delete files associated with the room (foreign key constraint)
+        using var cmd = new OracleCommand("DELETE FROM shared_files WHERE room_id = :roomId", conn);
+        cmd.Parameters.Add(new OracleParameter("roomId", roomId));
+        cmd.ExecuteNonQuery();
+
+        // Delete the room itself
+        using var deleteCmd = new OracleCommand("DELETE FROM rooms WHERE room_id = :roomId", conn);
+        deleteCmd.Parameters.Add(new OracleParameter("roomId", roomId));
+        deleteCmd.ExecuteNonQuery();
+    }
+
     // Get a Room object by its ID (with files loaded)
     // Returns null if room doesn't exist
     public Room? GetRoomById(string roomId)

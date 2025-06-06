@@ -39,6 +39,13 @@ namespace LiveShareHubApi.Controllers{
             return Ok(files);
         }
 
+        // GET api/room/all
+        [HttpGet("all")]
+        public ActionResult<List<Room>> getAllRooms(){
+            List<Room> myrooms = oracleDb.getAllRooms(); // retireves from OracleDbService.cs
+            return Ok(myrooms);
+        }
+
         // POST api/room
         [HttpPost]
         public ActionResult<Room> createRoom() // create a new Room with a unique ID
@@ -106,6 +113,18 @@ namespace LiveShareHubApi.Controllers{
             var contentType = "application/octet-stream";  //convert any file type into binary
             var fileBytes = System.IO.File.ReadAllBytes(filePath);
             return File(fileBytes, contentType, fileName);
+        }
+
+        // DELETE by roomID api/room/{roomId}
+        [HttpDelete("{roomId}")]
+        public ActionResult DeleteRoomByID(string roomId)
+        {
+            var room = oracleDb.GetRoomById(roomId);
+            if (room == null)
+                return NotFound("Room not found");
+
+            oracleDb.DeleteRoomByID(roomId);
+            return Ok("Room deleted successfully");
         }
     }
 
