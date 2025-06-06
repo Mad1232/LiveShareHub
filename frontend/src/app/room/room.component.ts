@@ -108,7 +108,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
       return;
     }
   
-    const deleteUrl = `http://localhost:5098/api/room/${this.roomId}`;
+    const deleteUrl = `http://3.16.159.175:5098/api/room/${this.roomId}`;
     this.http.delete(deleteUrl).subscribe({
       next: () => {
         console.log("Room deleted successfully");
@@ -136,7 +136,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
     const formData = new FormData();
     formData.append('file', selectedFile);
 
-    const uploadUrl = `http://localhost:5098/api/room/${this.roomId}/upload`;
+    const uploadUrl = `http://3.16.159.175:5098/api/room/${this.roomId}/upload`;
 
     this.http.post(uploadUrl, formData).subscribe({
       next: (response) => {
@@ -155,7 +155,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
       alert('No Room ID found.');
       return;
     }
-    const filesUrl = `http://localhost:5098/api/room/${this.roomId}/files`;
+    const filesUrl = `http://3.16.159.175:5098/api/room/${this.roomId}/files`;
     this.http.get<SharedFile[]>(filesUrl).subscribe({
       next: (files) => {
         this.filesList = files;
@@ -171,7 +171,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
   }
   // Add helper to download file by clicking
   downloadFile(file: SharedFile) {
-    const downloadUrl = `http://localhost:5098/api/room/${this.roomId}/files/${file.storedFileName}`;
+    const downloadUrl = `http://3.16.159.175:5098/api/room/${this.roomId}/files/${file.storedFileName}`;
     window.open(downloadUrl, '_blank');
   }
 
