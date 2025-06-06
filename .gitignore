@@ -27,3 +27,6 @@
 appsettings.json
 
 Notes.txt
+
+# Ignore local Jenkins server configuration
+Dockerfile-jenkins
