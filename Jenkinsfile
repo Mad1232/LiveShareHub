@@ -1,7 +1,10 @@
+// Jenkinsfile
+
 pipeline {
     agent {
         dockerfile {
             filename 'Dockerfile.jenkins-agent'
+            // This is the key: It forces a fresh build, avoiding cache issues.
             additionalBuildArgs '--no-cache'
         }
     }
@@ -11,45 +14,38 @@ pipeline {
     }
 
     stages {
-        stage('Verify Build Tools') {
+        // This stage confirms the agent is built correctly
+        stage('✅ Verify Tools') {
             steps {
-                echo 'Verifying git installation...'
-                sh 'which git'
+                echo 'Checking for Git...'
                 sh 'git --version'
-                echo 'Verification complete. Git is present.'
+                echo 'Git is surely installed!'
             }
         }
 
-    stage('Checkout') {
-        steps {
-            cleanWs() // Clean the workspace to avoid stale files
-            sh 'git config --global --add safe.directory ${WORKSPACE}'
-            script {
-                git url: 'https://github.com/Mad1232/LiveShareHub.git', branch: 'main', credentialsId: 'github-token'
+        stage('⬇️ Checkout') {
+            steps {
+                checkout scm
             }
         }
-    }
 
-        stage('Start OracleDB') {
+        stage('▶️ Start OracleDB') {
             steps {
                 echo '🟡 Starting OracleDB Docker container...'
-                sh 'docker start oracle-xe || echo Container already running'
+                sh 'docker start oracle-xe || echo "Container already running or does not exist"'
             }
         }
 
-        stage('Build Backend (.NET)') {
+        stage('🛠️ Build Backend (.NET)') {
             steps {
                 dir('backend') {
-                    sh 'dotnet nuget list source'
-                    sh 'curl -I https://api.nuget.org/v3/index.json'
                     sh 'dotnet restore'
-                    sh 'dotnet clean'
                     sh 'dotnet build'
                 }
             }
         }
 
-        stage('Build Frontend (Angular)') {
+        stage('🛠️ Build Frontend (Angular)') {
             steps {
                 dir('frontend') {
                     sh 'npm install'
