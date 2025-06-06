@@ -37,6 +37,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      this.roomId = params.get('id');
       this.currentCode = `// Welcome to Room! \n// Start coding with CodeMirror 6!\n\nfunction greet() {\n  console.log("Hello, ${this.roomId}!");\n}`;
     });
   }
@@ -101,8 +102,23 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
   }
 
   exitRoom(): void {
-    console.log('Exit Room clicked!');
-    this.router.navigate(['/']); //navigate back to homepage
+    if (!this.roomId || this.roomId == 'Loading...'){
+      console.log("Wrong Room ID")
+      return;
+    }
+  
+    const deleteUrl = `http://localhost:5098/api/room/${this.roomId}`;
+    this.http.delete(deleteUrl).subscribe({
+      next: () => {
+        console.log("Room deleted successfully");
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.error("Failed to delete room", err);
+        alert("Failed to delete room");
+      }
+    });
+    
   }
 
   uploadFile(): void {
@@ -119,7 +135,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
     const formData = new FormData();
     formData.append('file', selectedFile);
 
-    const uploadUrl = `http://localhost:5000/api/room/${this.roomId}/upload`;
+    const uploadUrl = `http://localhost:5098/api/room/${this.roomId}/upload`;
 
     this.http.post(uploadUrl, formData).subscribe({
       next: (response) => {
