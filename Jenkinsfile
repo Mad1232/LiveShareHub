@@ -20,16 +20,15 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                cleanWs() // Clean the workspace to avoid stale files
-                // Fix workspace ownership to match the jenkins user
-                sh 'chown -R jenkins:jenkins ${WORKSPACE}'
-                script {
-                    git url: 'https://github.com/Mad1232/LiveShareHub.git', branch: 'main', credentialsId: 'github-token'
-                }
+    stage('Checkout') {
+        steps {
+            cleanWs() // Clean the workspace to avoid stale files
+            sh 'git config --global --add safe.directory ${WORKSPACE}'
+            script {
+                git url: 'https://github.com/Mad1232/LiveShareHub.git', branch: 'main', credentialsId: 'github-token'
             }
         }
+    }
 
         stage('Start OracleDB') {
             steps {
