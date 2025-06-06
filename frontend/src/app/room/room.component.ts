@@ -183,7 +183,7 @@ getFileIcon(filename: string): string {
     case 'jpg':
     case 'jpeg':
     case 'gif':
-      return 'assets/icons/image-icon.png'; // put icon images in assets/icons/
+      return 'frontend/src/assets/icons/image-icon.png';
     case 'pdf':
       return 'assets/icons/pdf-icon.png';
     case 'doc':
