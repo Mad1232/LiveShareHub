@@ -10,6 +10,12 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Start OracleDB') {
             steps {
                 echo '🟡 Starting OracleDB Docker container...'
@@ -17,17 +23,17 @@ pipeline {
             }
         }
 
-    stage('Build Backend (.NET)') {
-        steps {
-            dir('backend') {
-                sh 'dotnet nuget list source'
-                sh 'curl -I https://api.nuget.org/v3/index.json'
-                sh 'dotnet restore'
-                sh 'dotnet clean'
-                sh 'dotnet build'
+        stage('Build Backend (.NET)') {
+            steps {
+                dir('backend') {
+                    sh 'dotnet nuget list source'
+                    sh 'curl -I https://api.nuget.org/v3/index.json'
+                    sh 'dotnet restore'
+                    sh 'dotnet clean'
+                    sh 'dotnet build'
+                }
             }
         }
-    }
 
         stage('Build Frontend (Angular)') {
             steps {
