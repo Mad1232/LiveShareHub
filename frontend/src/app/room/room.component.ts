@@ -10,6 +10,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { HttpClient } from '@angular/common/http';
+import { SharedFile } from '../models/shared-files';
 
 @Component({
   selector: 'app-room',
@@ -22,7 +23,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Added AfterViewInit and OnDestroy
   roomId: string | null = 'Loading...';
-
+  filesList: SharedFile[] = [];
 
   @ViewChild('cmHost') cmHost!: ElementRef<HTMLDivElement>; // For the editor's host div
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>; // for fileInput
@@ -150,7 +151,61 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
   }
 
   viewFiles(): void {
-    console.log('View Files clicked!');
-    // Future: Implement logic to view files
+    if (!this.roomId) {
+      alert('No Room ID found.');
+      return;
+    }
+    const filesUrl = `http://localhost:5098/api/room/${this.roomId}/files`;
+    this.http.get<SharedFile[]>(filesUrl).subscribe({
+      next: (files) => {
+        this.filesList = files;
+        console.log('Files in room:', files);
+        // Show files list in UI (e.g., open a modal or display below)
+        alert('Files retrieved! Check console or UI for list.');
+      },
+      error: (err) => {
+        console.error('Failed to fetch files', err);
+        alert('Failed to fetch files.');
+      }
+    });
   }
+  // Add helper to download file by clicking
+  downloadFile(file: SharedFile) {
+    const downloadUrl = `http://localhost:5098/api/room/${this.roomId}/files/${file.storedFileName}`;
+    window.open(downloadUrl, '_blank');
+  }
+
+  // Return icon URL based on file extension
+getFileIcon(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'png':
+    case 'jpg':
+    case 'jpeg':
+    case 'gif':
+      return 'assets/icons/image-icon.png'; // put icon images in assets/icons/
+    case 'pdf':
+      return 'assets/icons/pdf-icon.png';
+    case 'doc':
+    case 'docx':
+      return 'assets/icons/doc-icon.png';
+    case 'zip':
+    case 'rar':
+      return 'assets/icons/zip-icon.png';
+    case 'txt':
+      return 'assets/icons/txt-icon.png';
+    default:
+      return 'assets/icons/file-icon.png';
+  }
+}
+
+// Format size bytes to KB, MB, etc.
+formatFileSize(bytes: number | undefined): string {
+  if (!bytes) return 'Unknown';
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Byte';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 }
