@@ -18,7 +18,7 @@ export class HomeComponent {
       roomID: string;
     }
     // Angular POST call example:
-    this.http.post<Room>('http://localhost:5098/api/room', {})
+    this.http.post<Room>('http://3.16.159.175:5098/api/room', {})
       .subscribe({
         next: (room) => {
           console.log('Room created with ID:', room.roomID);
