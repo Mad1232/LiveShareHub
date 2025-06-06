@@ -1,16 +1,45 @@
-// TEMPORARY DIAGNOSTIC JENKINSFILE
+// Filename: Jenkinsfile
 
 pipeline {
-    // Use any available agent, likely the Jenkins controller itself
-    agent any
+    agent {
+        dockerfile {
+            filename 'Dockerfile.jenkins-agent'
+        }
+    }
+
+    environment {
+        DOTNET_ROOT = "/usr/share/dotnet"
+    }
 
     stages {
-        stage('Diagnostic Checkout') {
+        stage('Checkout') {
             steps {
-                echo "Attempting to checkout code on the base Jenkins agent..."
                 checkout scm
-                echo "SUCCESS! Code was checked out."
-                sh 'ls -la'
+            }
+        }
+
+        stage('Start OracleDB') {
+            steps {
+                echo '🟡 Starting OracleDB Docker container...'
+                sh 'docker start oracle-xe || echo "Container already running or does not exist"'
+            }
+        }
+
+        stage('Build Backend (.NET)') {
+            steps {
+                dir('backend') {
+                    sh 'dotnet restore'
+                    sh 'dotnet build'
+                }
+            }
+        }
+
+        stage('Build Frontend (Angular)') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'ng build'
+                }
             }
         }
     }

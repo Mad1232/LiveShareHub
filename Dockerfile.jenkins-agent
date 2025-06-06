@@ -1,25 +1,16 @@
+# Filename: Dockerfile.jenkins-agent
+
 FROM jenkins/inbound-agent:latest-jdk11
 
 USER root
-
-# Install Git, Docker CLI, sudo, wget, curl, and libicu
 RUN apt-get update && \
     apt-get install -y git docker.io sudo wget curl libicu-dev && \
-    # Add jenkins user to the docker group
     usermod -aG docker jenkins
-
-# Install .NET SDK
 RUN wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
     ./dotnet-install.sh --channel 8.0 --install-dir /usr/share/dotnet && \
     ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
-# Install Node.js + npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
-
-# Install Angular CLI
 RUN npm install -g @angular/cli
-
-# Switch back to the jenkins user
 USER jenkins
