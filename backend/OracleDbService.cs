@@ -81,26 +81,26 @@ public class OracleDbService
 
     // Get a Room object by its ID (with files loaded)
     // Returns null if room doesn't exist
-    public Room? GetRoomById(string roomId)
+public Room? GetRoomById(string roomId)
+{
+    using var conn = new OracleConnection(connectionString);
+    conn.Open();
+
+    using var cmd = new OracleCommand("SELECT room_id, created_at FROM rooms WHERE room_id = :roomId", conn);
+    cmd.Parameters.Add(new OracleParameter("roomId", roomId));
+
+    using var reader = cmd.ExecuteReader();
+    if (reader.Read())
     {
-        using var conn = new OracleConnection(connectionString);
-        conn.Open();
-
-        using var cmd = new OracleCommand("SELECT room_id, created_at FROM rooms WHERE room_id = :roomId", conn);
-        cmd.Parameters.Add(new OracleParameter("roomId", roomId));
-
-        using var reader = cmd.ExecuteReader();
-        if (reader.Read())
-        {
-            return new Room(reader.GetString(0))  // roomID
-            {
-                createdAt = reader.GetDateTime(1),
-                Files = GetFilesByRoomId(roomId)  // load associated files
-            };
-        }
-
-        return null;  // room not found
+        return new Room(reader.GetString(0)) {
+            createdAt = reader.GetDateTime(1),
+            Files = GetFilesByRoomId(roomId)
+        };
     }
+
+    return null;
+}
+
 
     // Insert a new Room into the database
     public void CreateRoom(Room room)
@@ -117,6 +117,8 @@ public class OracleDbService
 
     // Add a SharedFile to the shared_files table for a specific room
     public void AddFileToRoom(string roomId, SharedFile file)
+{
+    try
     {
         using var conn = new OracleConnection(connectionString);
         conn.Open();
@@ -132,6 +134,14 @@ public class OracleDbService
 
         cmd.ExecuteNonQuery();
     }
+    catch(Exception ex)
+    {
+        // Log error somewhere - for now just rethrow or write to console
+        Console.WriteLine($"Error inserting file: {ex.Message}");
+        throw;
+    }
+}
+
 
     // Check if a file with given storedFileName exists in the specified room
     public bool FileExistsInRoom(string roomId, string storedFileName)
