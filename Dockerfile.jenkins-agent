@@ -2,9 +2,10 @@ FROM jenkins/inbound-agent:latest-jdk11
 
 USER root
 
-# Install Docker CLI, sudo, wget, curl, and libicu
+# Install Git, Docker CLI, sudo, wget, curl, and libicu
 RUN apt-get update && \
-    apt-get install -y docker.io sudo wget curl libicu-dev && \
+    apt-get install -y git docker.io sudo wget curl libicu-dev && \
+    # Add jenkins user to the docker group
     usermod -aG docker jenkins
 
 # Install .NET SDK
@@ -20,4 +21,5 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 # Install Angular CLI
 RUN npm install -g @angular/cli
 
+# Switch back to the jenkins user
 USER jenkins
