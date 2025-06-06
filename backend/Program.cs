@@ -6,9 +6,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+            policy.WithOrigins(
+                "http://localhost:4200",
+                "http://3.16.159.175:4200"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
         });
 });
 
