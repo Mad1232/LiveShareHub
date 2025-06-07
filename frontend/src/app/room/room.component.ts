@@ -123,11 +123,34 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
   }
 
   uploadFile(): void {
-    console.log('Upload File clicked!');
-    this.fileInput.nativeElement.click(); 
-    // Future: Implement file upload logic
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '*/*';
+    input.onchange = () => {
+      if (!input.files || input.files.length === 0 || !this.roomId) return;
+  
+      const selectedFile = input.files[0];
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+  
+      const uploadUrl = `http://localhost:5098/api/room/${this.roomId}/upload`;
+  
+      this.http.post(uploadUrl, formData).subscribe({
+        next: (response) => {
+          console.log("Upload successful", response);
+          alert("File uploaded successfully!");
+          this.viewFiles();
+        },
+        error: (error) => {
+          console.error("Upload failed", error);
+          alert("Failed to upload file.");
+        }
+      });
+    };
+  
+    input.click();
   }
-
+  
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (!target.files || target.files.length === 0 || !this.roomId) return;
@@ -155,6 +178,8 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
       alert('No Room ID found.');
       return;
     }
+    this.router.navigate([`/room/${this.roomId}/view`]);
+
     const filesUrl = `http://localhost:5098/api/room/${this.roomId}/files`;
     this.http.get<SharedFile[]>(filesUrl).subscribe({
       next: (files) => {

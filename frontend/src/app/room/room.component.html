@@ -11,7 +11,7 @@
         </li>
         <li class="nav-item">
           <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" />
-          <a class="nav-link" href="#" (click)="uploadFile()">Upload File</a>
+          <a class="nav-link" href="#" (click)="uploadFile(); $event.preventDefault()">Upload File</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-danger" href="#" (click)="exitRoom()">End Session</a>
