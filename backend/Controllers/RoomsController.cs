@@ -126,6 +126,22 @@ namespace LiveShareHubApi.Controllers{
             oracleDb.DeleteRoomByID(roomId);
             return Ok("Room deleted successfully");
         }
+        //DELETE all Rooms api/room/all
+        [HttpDelete("all")]
+        public ActionResult DeleteAllRooms(){
+            List<Room> myRooms = oracleDb.getAllRooms(); // Retrieves from OracleDbService.cs
+
+            if(myRooms == null || myRooms.Count == 0){
+                return NotFound("No rooms to delete");
+            }
+
+            foreach (var room in myRooms){
+                oracleDb.DeleteRoomByID(room.roomID);
+            }
+
+            return Ok("All Rooms deleted successfully");
+        }
+
     }
 
 }
