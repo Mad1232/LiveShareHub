@@ -7,10 +7,10 @@ import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightSp
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language";
 import { javascript } from "@codemirror/lang-javascript";
-import { html } from "@codemirror/lang-html";
-import { css } from "@codemirror/lang-css";
 import { HttpClient } from '@angular/common/http';
 import { SharedFile } from '../models/shared-files';
+
+import { SignalRService } from '../services/signalr.service';  // import SignalR service
 
 @Component({
   selector: 'app-room',
@@ -21,29 +21,45 @@ import { SharedFile } from '../models/shared-files';
   templateUrl: './room.component.html',
   styleUrls: ['./room.component.css']
 })
-export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Added AfterViewInit and OnDestroy
-  roomId: string | null = 'Loading...';
+export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
+  roomId: string | null = null;
   filesList: SharedFile[] = [];
 
-  @ViewChild('cmHost') cmHost!: ElementRef<HTMLDivElement>; // For the editor's host div
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>; // for fileInput
-  private editorView!: EditorView;                         // To hold the CodeMirror instance
-  currentCode: string = `// Welcome to Room:!\n// Start coding with CodeMirror 6!\n\nfunction greet() {\n  console.log("Hello, world!");\n}`;
+  @ViewChild('cmHost') cmHost!: ElementRef<HTMLDivElement>;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
+  private editorView!: EditorView;
+  private suppressSignalRUpdate = false; // flag to prevent feedback loop
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
-    const roomId = this.route.snapshot.paramMap.get('id');
-    console.log('Room ID from URL:', roomId);
-  }
+  currentCode: string = `// Welcome to Room! Start coding with CodeMirror 6!\n\nfunction greet() {\n  console.log("Hello!");\n}`;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient,
+    private signalRService: SignalRService
+  ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.roomId = params.get('id');
-      this.currentCode = `// Welcome to Room! \n// Start coding with CodeMirror 6!\n\nfunction greet() {\n  console.log("Hello, ${this.roomId}!");\n}`;
+      this.currentCode = `// Welcome to Room: ${this.roomId}\n// Start coding with CodeMirror 6!\n\nfunction greet() {\n  console.log("Hello, ${this.roomId}!");\n}`;
+
+      if (this.roomId) {
+        this.signalRService.startConnection(this.roomId);
+
+        // When SignalR receives code update from others, update editor
+        this.signalRService.onCodeReceived((code: string) => {
+          if (code !== this.getEditorCode()) {
+            this.suppressSignalRUpdate = true; // prevent sending back this change
+            this.setEditorCode(code);
+            this.suppressSignalRUpdate = false;
+          }
+        });
+      }
     });
   }
 
-  // CodeMirror 6 Lifecycle Hooks and Methods -
   ngAfterViewInit(): void {
     if (this.cmHost && this.cmHost.nativeElement) {
       const state = EditorState.create({
@@ -54,18 +70,18 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
           highlightSpecialChars(),
           history(),
           drawSelection(),
-          keymap.of([
-            ...defaultKeymap,
-            ...historyKeymap,
-            indentWithTab
-          ]),
-
-          javascript(), // Default language for now
+          keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
+          javascript(),
           syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 
           EditorView.updateListener.of(update => {
             if (update.docChanged) {
               this.currentCode = update.state.doc.toString();
+
+              // Only send updates if NOT caused by incoming SignalR update
+              if (!this.suppressSignalRUpdate && this.roomId) {
+                this.signalRService.sendCode(this.roomId, this.currentCode);
+              }
             }
           })
         ]
@@ -86,28 +102,26 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
     }
   }
 
-  // helper methods to interact with the editor
-  public getEditorCode(): string {
+  getEditorCode(): string {
     return this.editorView ? this.editorView.state.doc.toString() : this.currentCode;
   }
 
-  public setEditorCode(newCode: string): void {
+  setEditorCode(newCode: string): void {
     if (this.editorView) {
       this.editorView.dispatch({
         changes: { from: 0, to: this.editorView.state.doc.length, insert: newCode }
       });
     } else {
-      // If editor not yet initialized, update the initial code
       this.currentCode = newCode;
     }
   }
 
   exitRoom(): void {
-    if (!this.roomId || this.roomId == 'Loading...'){
-      console.log("Wrong Room ID")
+    if (!this.roomId) {
+      console.log("Wrong Room ID");
       return;
     }
-  
+
     const deleteUrl = `http://localhost:5098/api/room/${this.roomId}`;
     this.http.delete(deleteUrl).subscribe({
       next: () => {
@@ -119,7 +133,6 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
         alert("Failed to delete room");
       }
     });
-    
   }
 
   uploadFile(): void {
@@ -128,13 +141,13 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
     input.accept = '*/*';
     input.onchange = () => {
       if (!input.files || input.files.length === 0 || !this.roomId) return;
-  
+
       const selectedFile = input.files[0];
       const formData = new FormData();
       formData.append('file', selectedFile);
-  
+
       const uploadUrl = `http://localhost:5098/api/room/${this.roomId}/upload`;
-  
+
       this.http.post(uploadUrl, formData).subscribe({
         next: (response) => {
           console.log("Upload successful", response);
@@ -147,10 +160,10 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
         }
       });
     };
-  
+
     input.click();
   }
-  
+
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (!target.files || target.files.length === 0 || !this.roomId) return;
@@ -185,7 +198,6 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
       next: (files) => {
         this.filesList = files;
         console.log('Files in room:', files);
-        // Show files list in UI (e.g., open a modal or display below)
         alert('Files retrieved! Check console or UI for list.');
       },
       error: (err) => {
@@ -194,43 +206,40 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy { // Adde
       }
     });
   }
-  // Add helper to download file by clicking
+
   downloadFile(file: SharedFile) {
     const downloadUrl = `http://localhost:5098/api/room/${this.roomId}/files/${file.storedFileName}`;
     window.open(downloadUrl, '_blank');
   }
 
-  // Return icon URL based on file extension
-getFileIcon(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase();
-  switch (ext) {
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-    case 'gif':
-      return 'frontend/src/assets/icons/image-icon.png';
-    case 'pdf':
-      return 'assets/icons/pdf-icon.png';
-    case 'doc':
-    case 'docx':
-      return 'assets/icons/doc-icon.png';
-    case 'zip':
-    case 'rar':
-      return 'assets/icons/zip-icon.png';
-    case 'txt':
-      return 'assets/icons/txt-icon.png';
-    default:
-      return 'assets/icons/file-icon.png';
+  getFileIcon(filename: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'gif':
+        return 'frontend/src/assets/icons/image-icon.png';
+      case 'pdf':
+        return 'assets/icons/pdf-icon.png';
+      case 'doc':
+      case 'docx':
+        return 'assets/icons/doc-icon.png';
+      case 'zip':
+      case 'rar':
+        return 'assets/icons/zip-icon.png';
+      case 'txt':
+        return 'assets/icons/txt-icon.png';
+      default:
+        return 'assets/icons/file-icon.png';
+    }
   }
-}
 
-// Format size bytes to KB, MB, etc.
-formatFileSize(bytes: number | undefined): string {
-  if (!bytes) return 'Unknown';
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 Byte';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
+  formatFileSize(bytes: number | undefined): string {
+    if (!bytes) return 'Unknown';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Byte';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+  }
 }
