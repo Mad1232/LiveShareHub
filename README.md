@@ -44,11 +44,6 @@ Direct Link: [LiveShareHub Demo Video](https://youtu.be/vq7TtN0lQEE)
 - Also deployed on **AWS EC2** (now terminated to avoid charges)
 - Uses **Jenkins** (via Docker) for **CI/CD**
 
-
-### Explanation
- **Direct Link**:
-   - Added `[LiveShareHub Demo Video](https://youtu.be/vq7TtN0lQEE)` as a fallback for users who prefer a text link.
-   - This ensures accessibility and clarity.
 ---
 
 #### 🌿 Branch Structure
@@ -56,5 +51,3 @@ Direct Link: [LiveShareHub Demo Video](https://youtu.be/vq7TtN0lQEE)
 ```bash
 main                    # Contains code for full local deployment
 AWS_Deployment_Latest  # AWS deployment code & configuration
-
-
