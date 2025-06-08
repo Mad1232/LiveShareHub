@@ -7,7 +7,7 @@ export class SignalRService {
 
   startConnection(roomId: string): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`http://localhost:5098/hubs/room?roomId=${roomId}`)
+      .withUrl(`http://18.191.119.189/hubs/room?roomId=${roomId}`) //updated to AWS server
       .build();
 
     this.hubConnection

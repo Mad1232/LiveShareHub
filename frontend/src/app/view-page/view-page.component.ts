@@ -20,7 +20,7 @@ export class ViewPageComponent implements OnInit {
   ngOnInit(): void {
     this.roomId = this.route.snapshot.paramMap.get('id');
     if (this.roomId) {
-      const filesUrl = `http://localhost:5098/api/room/${this.roomId}/files`;
+      const filesUrl = `http://18.191.119.189/api/room/${this.roomId}/files`; //url changed
       this.http.get<SharedFile[]>(filesUrl).subscribe({
         next: files => this.filesList = files,
         error: err => console.error('No files are uploaded', err)
@@ -42,7 +42,7 @@ export class ViewPageComponent implements OnInit {
   }
 
   downloadFile(file: SharedFile): void {
-    const downloadUrl = `http://localhost:5098/api/room/${this.roomId}/files/${file.storedFileName}`;
+    const downloadUrl = `http://18.191.119.189:5098/api/room/${this.roomId}/files/${file.storedFileName}`; //url changed
     window.open(downloadUrl, '_blank');
   }
 

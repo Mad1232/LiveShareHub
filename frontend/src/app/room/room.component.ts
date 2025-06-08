@@ -122,7 +122,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const deleteUrl = `http://localhost:5098/api/room/${this.roomId}`;
+    const deleteUrl = `http://18.191.119.189:5098/api/room/${this.roomId}`; // url changed
     this.http.delete(deleteUrl).subscribe({
       next: () => {
         console.log("Room deleted successfully");
@@ -146,7 +146,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const uploadUrl = `http://localhost:5098/api/room/${this.roomId}/upload`;
+      const uploadUrl = `http://18.191.119.189/api/room/${this.roomId}/upload`; //url changed
 
       this.http.post(uploadUrl, formData).subscribe({
         next: (response) => {
@@ -172,7 +172,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
     const formData = new FormData();
     formData.append('file', selectedFile);
 
-    const uploadUrl = `http://localhost:5098/api/room/${this.roomId}/upload`;
+    const uploadUrl = `http://18.191.119.189/api/room/${this.roomId}/upload`; //url changed
 
     this.http.post(uploadUrl, formData).subscribe({
       next: (response) => {
@@ -193,7 +193,7 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.router.navigate([`/room/${this.roomId}/view`]);
 
-    const filesUrl = `http://localhost:5098/api/room/${this.roomId}/files`;
+    const filesUrl = `http://18.191.119.189/api/room/${this.roomId}/files`; //url changed
     this.http.get<SharedFile[]>(filesUrl).subscribe({
       next: (files) => {
         this.filesList = files;
@@ -208,8 +208,8 @@ export class RoomComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadFile(file: SharedFile) {
-    const downloadUrl = `http://localhost:5098/api/room/${this.roomId}/files/${file.storedFileName}`;
-    window.open(downloadUrl, '_blank');
+    const downloadUrl = `http://18.191.119.189:5098/api/room/${this.roomId}/files/${file.storedFileName}`; //url changed
+    window.open(downloadUrl, '_blank'); 
   }
 
   getFileIcon(filename: string): string {
