@@ -15,6 +15,16 @@ This project lets users:
 
 ---
 
+#### 🎥 Demo
+
+Check out the video demo of LiveShareHub in action:
+
+[![LiveShareHub Demo VIdeo](https://img.youtube.com/vi/vq7TtN0lQEE/0.jpg)](https://www.youtube.com/watch?v=vq7TtN0lQEE)
+---
+Direct Link: [LiveShareHub Demo Video](https://youtu.be/vq7TtN0lQEE)
+
+---
+
 #### ⚙️ **Tech Stack**
 
 ##### 🌐 Frontend
@@ -34,6 +44,11 @@ This project lets users:
 - Also deployed on **AWS EC2** (now terminated to avoid charges)
 - Uses **Jenkins** (via Docker) for **CI/CD**
 
+
+### Explanation
+ **Direct Link**:
+   - Added `[LiveShareHub Demo Video](https://youtu.be/vq7TtN0lQEE)` as a fallback for users who prefer a text link.
+   - This ensures accessibility and clarity.
 ---
 
 #### 🌿 Branch Structure
@@ -41,3 +56,5 @@ This project lets users:
 ```bash
 main                    # Contains code for full local deployment
 AWS_Deployment_Latest  # AWS deployment code & configuration
+
+
