@@ -8,7 +8,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200")
+            policy.WithOrigins("http://localhost:4200", "http://18.191.119.189:5098") // url added
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials(); // For SignalR WebSockets
