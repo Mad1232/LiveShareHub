@@ -1,0 +1,101 @@
+.navbar {
+    background-color: #fbf4b5;
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #e5e5e5;
+    align-items: center;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.05);
+    width: 100%; /* Full width */
+}
+  
+.navbar-nav {
+display: flex;
+list-style: none;
+margin: 0;
+padding: 0;
+}
+  
+.nav-btn {
+border: none;
+background: none;
+color: #333;
+font-weight: 600;
+font-size: 1rem;
+padding: 0.5rem 1.2rem;
+border-radius: 5px;
+cursor: pointer;
+text-decoration: none;
+}
+  
+.nav-btn:hover {
+background: #f2f2f2;
+}
+
+.room-content {
+padding: 2rem;
+color: white;
+}
+
+
+.files-list-container {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  .files-list-container ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  .files-list-container li {
+    margin-bottom: 8px;
+  }
+  .files-list-container button {
+    margin-left: 10px;
+  }
+  
+  .files-folder-container {
+    padding: 1rem;
+  }
+  
+  .folder-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .file-card {
+    width: 180px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+  }
+  
+  .file-icon img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .file-info {
+    flex-grow: 1;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    overflow-wrap: anywhere;
+  }
+  
+  .file-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  .file-details small {
+    color: #555;
+  }
+  

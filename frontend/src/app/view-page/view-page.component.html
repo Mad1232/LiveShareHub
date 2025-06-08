@@ -1,26 +1,36 @@
-<nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">File Viewer</span>
-      <button class="btn btn-outline-primary" (click)="goBackToRoom()">← Go back to Room</button>
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#roomNavbarContent" aria-controls="roomNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="roomNavbarContent">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <button class="btn btn-outline-primary" (click)="goBackToRoom()">← Go back to Room</button>
+        </li>
+      </ul>
     </div>
-  </nav>
-  
-  <div class="container mt-4">
-    <h4>Files in Room</h4>
-    <div *ngIf="filesList.length === 0">No files uploaded yet.</div>
-    <div class="row" *ngIf="filesList.length > 0">
-      <div *ngFor="let file of filesList" class="col-md-4 mb-3">
-        <div class="card">
-          <div class="card-body d-flex align-items-center">
-            <img [src]="getFileIcon(file.originalFileName)" alt="File Icon" width="40" class="me-3" />
-            <div class="flex-grow-1">
-              <h6 class="card-title mb-1">{{ file.originalFileName }}</h6>
-              <p class="mb-1"><small>Size: {{ formatFileSize(file.size) }}</small></p>
-              <p class="mb-1"><small>Uploaded: {{ file.uploadedAt | date: 'short' }}</small></p>
-              <button class="btn btn-sm btn-outline-primary" (click)="downloadFile(file)">Download</button>
-            </div>
+  </div>
+</nav>
+
+  <div *ngIf="filesList.length > 0" class="files-folder-container">
+    <h5 class="mb-3">Files in this room:</h5>
+    <div class="folder-grid">
+      <div *ngFor="let file of filesList" class="file-card">
+        <div class="file-icon">
+          <img [src]="getFileIcon(file.originalFileName)" alt="File icon" />
+        </div>
+        <div class="file-info">
+          <div class="file-name" title="{{file.originalFileName}}">
+            {{ file.originalFileName }}
+          </div>
+          <div class="file-details">
+            <small>Size: {{ formatFileSize(file.size) }}</small><br/>
+            <small>Uploaded: {{ file.uploadedAt | date:'medium' }}</small>
           </div>
         </div>
+        <button class="btn btn-sm btn-outline-primary" (click)="downloadFile(file)">Download</button>
       </div>
     </div>
   </div>

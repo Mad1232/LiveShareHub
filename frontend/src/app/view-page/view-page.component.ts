@@ -23,32 +23,14 @@ export class ViewPageComponent implements OnInit {
       const filesUrl = `http://localhost:5098/api/room/${this.roomId}/files`;
       this.http.get<SharedFile[]>(filesUrl).subscribe({
         next: files => this.filesList = files,
-        error: err => console.error('Error fetching files', err)
+        error: err => console.error('No files are uploaded', err)
       });
     }
   }
 
   getFileIcon(filename: string): string {
     const ext = filename.split('.').pop()?.toLowerCase();
-    switch (ext) {
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-      case 'gif':
-        return 'assets/icons/image-icon.png';
-      case 'pdf':
-        return 'assets/icons/pdf-icon.png';
-      case 'doc':
-      case 'docx':
-        return 'assets/icons/doc-icon.png';
-      case 'zip':
-      case 'rar':
-        return 'assets/icons/zip-icon.png';
-      case 'txt':
-        return 'assets/icons/txt-icon.png';
-      default:
-        return 'assets/icons/file-icon.png';
-    }
+        return 'assets/icons/folder.png';
   }
 
   formatFileSize(bytes: number | undefined): string {

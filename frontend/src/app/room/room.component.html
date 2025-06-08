@@ -23,25 +23,4 @@
 
 <div class="editor-container-wrapper">
   <div #cmHost id="cmHost"></div> </div>
-
-  <div *ngIf="filesList.length > 0" class="files-folder-container">
-    <h5 class="mb-3">Files in this room:</h5>
-    <div class="folder-grid">
-      <div *ngFor="let file of filesList" class="file-card">
-        <div class="file-icon">
-          <img [src]="getFileIcon(file.originalFileName)" alt="File icon" />
-        </div>
-        <div class="file-info">
-          <div class="file-name" title="{{file.originalFileName}}">
-            {{ file.originalFileName }}
-          </div>
-          <div class="file-details">
-            <small>Size: {{ formatFileSize(file.size) }}</small><br/>
-            <small>Uploaded: {{ file.uploadedAt | date:'medium' }}</small>
-          </div>
-        </div>
-        <button class="btn btn-sm btn-outline-primary" (click)="downloadFile(file)">Download</button>
-      </div>
-    </div>
-  </div>
   
